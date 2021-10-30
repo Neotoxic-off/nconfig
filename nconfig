@@ -1,0 +1,144 @@
+#!/usr/bin/env python3
+
+import os
+import subprocess
+
+class Font:
+    def __init__(self):
+        self.Manager = Manager(
+            "https://github.com/powerline/fonts --depth=1", 
+            "git",
+            "; cd fonts ; ./install.sh ; cd .. ; rm -rf fonts"
+        )
+
+class Alacritty:
+    def __init__(self):
+        self.Manager = Manager(
+            "alacritty", 
+            "pacman",
+            "--noconfirm"
+        )
+
+class Fish:
+    def __init__(self):
+        self.Manager = Manager(
+            "fish", 
+            "pacman",
+            "--noconfirm"
+        )
+
+class Neovim:
+    def __init__(self):
+        self.Manager = Manager(
+            "neovim", 
+            "pacman",
+            "--noconfirm"
+        )
+
+class Npm:
+    def __init__(self):
+        self.Manager = Manager(
+            "npm", 
+            "pacman",
+            "--noconfirm"
+        )
+
+class Update():
+    def __init__(self):
+        self.Manager = Manager(
+            "", 
+            "update",
+            "--noconfirm"
+        )
+
+class Manager:
+    def __init__(self, url, method, more):
+        self.downloadable = False
+        self.url = url
+        self.method = method
+        self.more = more
+        self.logs = "logs.txt"
+        self.methods = {
+            "git" : "git clone",
+            "pacman" : "sudo pacman -S",
+            "curl" : "curl -L",
+            "omf" : "omf install",
+            "npm" : "sudo npm i",
+            "update" : "sudo pacman -Syu"
+        }
+        self.result = {
+            "data" : None,
+            "stdout" : None,
+            "stderr" : None,
+            "return" : None
+        }
+        self.check_method(method)
+
+    def check_method(self, method):
+        self.downloadable = (method in self.methods.keys())
+
+    def download(self):
+        command = "{} {} {}".format(
+            self.methods[self.method],
+            self.url,
+            self.more
+        )
+        child = None
+
+        if (self.downloadable == True):
+            if (len(self.url) > 1):
+                print("Downloading: {}".format(self.url))
+            child = subprocess.Popen(
+                command,
+                stdout = subprocess.PIPE,
+                stderr = subprocess.PIPE,
+                shell = True,
+                universal_newlines = True
+            )
+            self.result["data"] = child.communicate()
+            self.result["stdout"] = self.result["data"][0]
+            self.result["stderr"] = self.result["data"][1]
+            self.result["return"] = child.returncode
+
+            f = open(self.logs, 'a')
+            f.write("----------------------\n")
+            f.write("STDOUT:\n")
+            f.write("{}\n".format(self.result["stdout"]))
+            f.write("----------------------\n")
+            f.write("{}\n".format(self.result["stderr"]))
+            f.close()
+
+class Nconfig:
+    def __init__(self):
+        if (os.path.isfile("logs.txt") == True):
+            os.remove("logs.txt")
+        self.configurations = {
+            "update" : Update(),
+            "font" : Font(),
+            "alacritty" : Alacritty(),
+            "fish" : Fish(),
+            "neovim" : Neovim(),
+            "npm" : Npm()
+        }
+
+        self.menu()
+
+    def menu(self):
+        choice = None
+        
+        for i in self.configurations.keys():
+            print(" --> {}".format(i))
+        print("\nready ? [y/n]")
+        if (input(": ") == 'y'):
+            print("\nPreparing...")
+            self.download()
+        else:
+            exit(1)
+
+    def download(self):
+        for i in self.configurations.keys():
+            self.configurations[i].Manager.download()
+
+if (__name__ == "__main__"):
+    Nconfig()
+
