@@ -1,0 +1,40 @@
+{
+    "packages" : [
+        {
+            "name" : "powerline fonts",
+            "method" : "git clone",
+            "source" : "https://github.com/powerline/fonts --depth=1",
+            "build" : "cd fonts ; ./install.sh ; cd .. ; rm  -rf fonts"
+        },
+        {
+            "name" : "updating pacman",
+            "method" : "sudo pacman -Syu --noconfirm",
+            "source" : "",
+            "build" : ""
+        },
+        {
+            "name" : "alacritty",
+            "method" : "sudo pacman -S",
+            "source" : "alacritty --noconfirm",
+            "build" : ""
+        },
+        {
+            "name" : "fish",
+            "method" : "sudo pacman -S",
+            "source" : "fish --noconfirm",
+            "build" : ""
+        },
+        {
+            "name" : "neovim",
+            "method" : "sudo pacman -S",
+            "source" : "neovim --noconfirm",
+            "build" : ""
+        },
+        {
+            "name" : "npm",
+            "method" : "sudo pacman -S",
+            "source" : "npm --noconfirm",
+            "build" : ""
+        }
+    ]
+}
