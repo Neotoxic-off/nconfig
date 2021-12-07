@@ -25,6 +25,12 @@
             "build" : ""
         },
         {
+            "name" : "omf",
+            "method" : "curl",
+            "source" : "https://raw.githubusercontent.com/oh-my-fish/oh-my-fish/master/bin/install",
+            "build" : ""
+        },
+        {
             "name" : "neovim",
             "method" : "sudo pacman -S",
             "source" : "neovim --noconfirm",
